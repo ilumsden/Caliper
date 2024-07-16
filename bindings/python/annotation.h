@@ -7,7 +7,7 @@ namespace cali {
 
 class PythonAnnotation : public cali::Annotation {
 public:
-  PythonAnnotation(const char* name)
+  PythonAnnotation(const char* name);
 
   PythonAnnotation(const char *name,
                    cali_attr_properties opt);
