@@ -9,15 +9,12 @@ namespace cali {
 
 class PythonAttribute {
 public:
-  PythonAttribute(const char *name, cali_attr_type type);
+  PythonAttribute(const char *name, cali_attr_type type, int properties = CALI_ATTR_DEFAULT);
 
   PythonAttribute(const char *name, cali_attr_type type,
-                  cali_attr_properties opt);
-
-  PythonAttribute(const char *name, cali_attr_type type,
-                  cali_attr_properties opt,
-                  std::vector<PythonAttribute &> &meta_attrs,
-                  std::vector<PythonVariant &> &meta_vals);
+                  int properties,
+                  const std::vector<PythonAttribute> &meta_attrs,
+                  const std::vector<PythonVariant> &meta_vals);
 
   static PythonAttribute find_attribute(const char *name);
 
@@ -25,7 +22,7 @@ public:
 
   cali_attr_type type() const;
 
-  cali_attr_properties properties() const;
+  int properties() const;
 
   void begin();
 

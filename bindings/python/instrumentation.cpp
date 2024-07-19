@@ -1,47 +1,39 @@
 #include "instrumentation.h"
 #include "variant.h"
+
+#include <algorithm>
 #include <stdexcept>
 
-namespace cali {
+namespace cali 
+{
 
-PythonAttribute::PythonAttribute(const char *name, cali_attr_type type)
-    : m_attr_id(cali_create_attribute(name, type, CALI_ATTR_DEFAULT)) {
+PythonAttribute::PythonAttribute(const char *name, cali_attr_type type,
+                                 int properties)
+    : m_attr_id(cali_create_attribute(name, type, properties)) {
   if (m_attr_id == CALI_INV_ID) {
     throw std::runtime_error("Failed to create attribute");
   }
 }
 
 PythonAttribute::PythonAttribute(const char *name, cali_attr_type type,
-                                 cali_attr_properties opt)
-    : m_attr_id(cali_create_attribute(name, type, opt)) {
-  if (m_attr_id == CALI_INV_ID) {
-    throw std::runtime_error("Failed to create attribute");
-  }
-}
-
-PythonAttribute::PythonAttribute(const char *name, cali_attr_type type,
-                                 cali_attr_properties opt,
-                                 std::vector<PythonAttribute &> &meta_attrs,
-                                 std::vector<PythonVariant &> &meta_vals) {
+                                 int properties,
+                                 const std::vector<PythonAttribute> &meta_attrs,
+                                 const std::vector<PythonVariant> &meta_vals) {
   if (meta_attrs.size() != meta_vals.size()) {
     throw std::runtime_error(
         "'meta_attrs' and 'meta_vals' must be same length");
   }
-  size_t num_meta_elems = meta_attrs.size();
-  cali_id_t *meta_attr_list = new cali_id_t[num_meta_elems];
-  cali_variant_t *meta_val_list = new cali_variant_t[num_meta_elems];
-  for (size_t i = 0; i < num_meta_elems; i++) {
-    meta_attr_list[i] = meta_attrs[i].m_attr_id;
-    meta_val_list[i] = meta_vals[i].c_variant;
-  }
+  std::vector<cali_id_t> meta_attr_vec;
+  std::vector<cali_variant_t> meta_vals_vec;
+  std::transform(meta_attrs.begin(), meta_attrs.end(), std::back_inserter(meta_attr_vec),
+    [](const PythonAttribute& a) { return a.m_attr_id; });
+  std::transform(meta_vals.begin(), meta_vals.end(), std::back_inserter(meta_vals_vec),
+    [](const PythonVariant& v) { return v.c_variant(); });
   m_attr_id = cali_create_attribute_with_metadata(
-      name, type, static_cast<int>(properties), num_meta_elems, meta_attr_list,
-      meta_val_list);
+    name, type, properties, meta_attr_vec.size(), meta_attr_vec.data(), meta_vals_vec.data());
   if (m_attr_id == CALI_INV_ID) {
     throw std::runtime_error("Could not create attribute with metadata");
   }
-  delete[] meta_val_list;
-  delete[] meta_attr_list;
 }
 
 PythonAttribute::PythonAttribute(cali_id_t id) {
@@ -64,7 +56,7 @@ cali_attr_type PythonAttribute::type() const {
   return cali_attribute_type(m_attr_id);
 }
 
-cali_attr_properties PythonAttribute::properties() const {
+int PythonAttribute::properties() const {
   return static_cast<cali_attr_properties>(
       cali_attribute_properties(m_attr_id));
 }
@@ -99,8 +91,8 @@ void create_caliper_instrumentation_mod(
       py::arg(), py::arg(), py::arg("opt"));
   cali_attribute_type.def(
       py::init<const char *, cali_attr_type, cali_attr_properties,
-               std::vector<PythonAttribute &> &,
-               std::vector<PythonVariant &> &>(),
+               std::vector<PythonAttribute> &,
+               std::vector<PythonVariant> &>(),
       "");
   cali_attribute_type.def_static("find_attribute",
                                  &PythonAttribute::find_attribute);
