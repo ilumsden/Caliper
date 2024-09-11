@@ -32,10 +32,10 @@ PythonAttribute::PythonAttribute(const char *name, cali_attr_type type,
   cali_variant_t *meta_val_list = new cali_variant_t[num_meta_elems];
   for (size_t i = 0; i < num_meta_elems; i++) {
     meta_attr_list[i] = meta_attrs[i].m_attr_id;
-    meta_val_list[i] = meta_vals[i].c_variant;
+    meta_val_list[i] = meta_vals[i].c_variant();
   }
   m_attr_id = cali_create_attribute_with_metadata(
-      name, type, static_cast<int>(properties), num_meta_elems, meta_attr_list,
+      name, type, static_cast<int>(opt), num_meta_elems, meta_attr_list,
       meta_val_list);
   if (m_attr_id == CALI_INV_ID) {
     throw std::runtime_error("Could not create attribute with metadata");
