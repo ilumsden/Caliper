@@ -101,8 +101,7 @@ void create_caliper_instrumentation_mod(
       py::arg(), py::arg("opt"));
   cali_attribute_type.def(
       py::init<const char *, cali_attr_type, cali_attr_properties,
-               std::vector<PythonAttribute &> &,
-               std::vector<PythonVariant &> &>(),
+               std::vector<PythonAttribute> &, std::vector<PythonVariant> &>(),
       "Create Caliper Attribute with name, type, properties, and metadata");
   cali_attribute_type.def_static("find_attribute",
                                  &PythonAttribute::find_attribute,
