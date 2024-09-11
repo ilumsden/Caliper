@@ -21,8 +21,8 @@ PythonAttribute::PythonAttribute(const char *name, cali_attr_type type,
 
 PythonAttribute::PythonAttribute(const char *name, cali_attr_type type,
                                  cali_attr_properties opt,
-                                 std::vector<PythonAttribute &> &meta_attrs,
-                                 std::vector<PythonVariant &> &meta_vals) {
+                                 std::vector<PythonAttribute> &meta_attrs,
+                                 std::vector<PythonVariant> &meta_vals) {
   if (meta_attrs.size() != meta_vals.size()) {
     throw std::runtime_error(
         "'meta_attrs' and 'meta_vals' must be same length");
