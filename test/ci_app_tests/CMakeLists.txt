@@ -134,25 +134,9 @@ if (WITH_FORTRAN)
 endif()
 
 if (WITH_PYTHON_BINDINGS)
-  foreach(file ${CALIPER_CI_Python_TEST_APPS})
-    add_custom_target(${file} ALL
-      COMMAND ${CMAKE_COMMAND} -E create_symlink
-        ${CMAKE_CURRENT_SOURCE_DIR}/${file}
-        ${CMAKE_CURRENT_BINARY_DIR}/${file})
-  endforeach()
-
-  list(APPEND PYTHON_SCRIPTS test_python_api.py)
-endif()
-
-if (WITH_PYTHON_BINDINGS)
-  foreach(file ${CALIPER_CI_Python_TEST_APPS})
-    add_custom_target(${file} ALL
-      COMMAND ${CMAKE_COMMAND} -E create_symlink
-        ${CMAKE_CURRENT_SOURCE_DIR}/${file}
-        ${CMAKE_CURRENT_BINARY_DIR}/${file})
-  endforeach()
-
-  list(APPEND PYTHON_SCRIPTS test_python_api.py)
+  list(APPEND PYTHON_SCRIPTS
+    ${CALIPER_CI_Python_TEST_APPS}
+    test_python_api.py)
 endif()
 
 set(DATA_FILES

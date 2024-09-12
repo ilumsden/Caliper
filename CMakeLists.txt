@@ -422,12 +422,19 @@ if(WITH_TAU)
 endif()
 
 # Find Python
-set(FIND_PYTHON_COMPONENTS "Interpreter")
 if (WITH_PYTHON_BINDINGS)
-  set(FIND_PYTHON_COMPONENTS "Development" ${FIND_PYTHON_COMPONENTS})
+  find_package(Python COMPONENTS Interpreter Development REQUIRED)
+  find_package(pybind11 CONFIG REQUIRED)
+  if (pybind11_FOUND)
+    set(CALIPER_HAVE_PYBIND11 TRUE)
+    set(CALIPER_PyBind_CMAKE_MSG "Yes, using ${pybind11_INCLUDE_DIRS}")
+  else()
+    message(WARNING "Python bindings requested but pybind11 was not found!")
+  endif()
+else()
+  find_package(Python COMPONENTS Interpreter REQUIRED)
 endif ()
 
-find_package(Python COMPONENTS ${FIND_PYTHON_COMPONENTS} REQUIRED)
 set(CALI_PYTHON_EXECUTABLE Python::Interpreter)
 
 if (WITH_SAMPLER)
@@ -506,7 +513,7 @@ add_subdirectory(src)
 
 add_subdirectory(examples/apps EXCLUDE_FROM_ALL)
 
-if (WITH_PYTHON_BINDINGS)
+if (CALIPER_HAVE_PYBIND11)
   add_subdirectory(bindings/python)
 endif ()
 
@@ -620,6 +627,7 @@ message(STATUS "Caliper configuration summary:")
 message(STATUS "Caliper version           : ${CALIPER_VERSION}")
 message(STATUS "Build type                : ${CMAKE_BUILD_TYPE}")
 message(STATUS "Compiler                  : ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} (${CMAKE_CXX_COMPILER})")
+message(STATUS "Python interpreter        : ${Python_EXECUTABLE}")
 message(STATUS "System                    : ${CMAKE_SYSTEM} (${CMAKE_SYSTEM_PROCESSOR})")
 message(STATUS "Install dir               : ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "Build shared libs         : ${BUILD_SHARED_LIBS}")
@@ -628,6 +636,7 @@ message(STATUS "Build tests               : ${BUILD_TESTING}")
 
 set(CALIPER_MODULES
   Fortran
+  PyBind
   cpuinfo
   memusage
   adiak

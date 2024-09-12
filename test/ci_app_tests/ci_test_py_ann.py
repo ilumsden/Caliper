@@ -8,7 +8,7 @@ from pycaliper.instrumentation import (
     set_byname,
     end_byname,
 )
-from pycaliper.types import AttrProperties
+from pycaliper.types import AttrProperties, AttrType
 from pycaliper.variant import Variant
 from pycaliper.config_manager import ConfigManager
 
@@ -16,7 +16,7 @@ import sys
 
 
 def main():
-    config_preset({"CALI_CHANNEL_FLUSH_ON_EXIT", "false"})
+#     config_preset({"CALI_CHANNEL_FLUSH_ON_EXIT", "false"})
 
     mgr = ConfigManager()
     if len(sys.argv) > 1:
@@ -33,7 +33,7 @@ def main():
     set_global_byname("global.string", "my global string")
     set_global_byname("global.uint", 42)
 
-    iter_attr = Attribute("iteration", AttrProperties.CALI_ATTR_ASVALUE)
+    iter_attr = Attribute("iteration", AttrType.CALI_TYPE_INT, AttrProperties.CALI_ATTR_ASVALUE)
 
     begin_byname("phase", "loop")
 
@@ -45,12 +45,13 @@ def main():
 
     begin_byname("ci_test_c_ann.meta-attr")
 
-    meta_attr = Attribute("meta-attr")
+    meta_attr = Attribute("meta-attr", AttrType.CALI_TYPE_INT)
     meta_val = Variant(47)
 
     test_attr = Attribute(
         "test-attr-with-metadata",
-        AttrProperties.CALI_ATTR_UNLIGNED,
+        AttrType.CALI_TYPE_STRING,
+        int(AttrProperties.CALI_ATTR_UNALIGNED),
         [meta_attr],
         [meta_val],
     )
